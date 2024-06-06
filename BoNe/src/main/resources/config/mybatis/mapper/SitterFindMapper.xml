@@ -1,0 +1,68 @@
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.find.mapper.SitterFindMapper">
+
+	<!-- 총 게시글 수 가져오기 -->
+	<select id="getTotalCount" resultType="_int" parameterType="paging">
+		select count(*) from introduce 
+		<if test="findAddr != ''">
+			where addr like '%' || #{findAddr} || '%'
+		</if>
+	</select>
+	
+	<select id="selectByAddr" resultType="Find" parameterType="string">
+		select * from introduce where addr like '%' || #{value} || '%'
+	</select>
+	
+	
+	<select id="selectPaging" resultType="Find" parameterType="paging">
+		select * from (
+			select row_number() over(order by ino desc) rn, introduce.*
+			,(select unickname from wish where ino=introduce.ino) wishNick
+			from introduce
+			<if test="findAddr != ''">
+				where addr like '%' || #{findAddr} || '%'
+			</if>
+			)
+		<![CDATA[
+			where rn > #{start} and rn <= #{end}
+		]]>
+	</select>
+	
+	<!-- 리뷰가 가장 많은 펫시터들의 introduce를 페이징하여 조회 -->
+	<select id="selectByReviewCount" resultType="Find" parameterType="paging">
+    select * from (
+        select row_number() over(order by (select count(*) from reple where ino=introduce.ino) desc) rn, 
+        introduce.*, 
+        (select unickname from wish where ino=introduce.ino) wishNick,
+        (select count(*) from reple where ino=introduce.ino) as rpl_count
+        from introduce
+        <if test="findAddr != ''">
+            where addr like '%' || #{findAddr} || '%'
+        </if>
+		)
+		<![CDATA[
+			where rn > #{start} and rn <= #{end}
+		]]>
+	</select>
+
+	<!-- 평점(별점) 높은 순서대로 introduce를 페이징하여 조회 -->
+	<select id="selectByStarHigh" resultType="Find" parameterType="paging">
+    select * from (
+        select row_number() over(order by (select avg(star) from reple where ino=introduce.ino) desc) rn, 
+        introduce.*, 
+        (select unickname from wish where ino=introduce.ino) wishNick,
+        (select count(*) from reple where ino=introduce.ino) as rpl_count,
+        (select avg(star) from reple where ino=introduce.ino) as avg_star
+        from introduce
+        <if test="findAddr != ''">
+            where addr like '%' || #{findAddr} || '%'
+        </if>
+		)
+		<![CDATA[
+			where rn > #{start} and rn <= #{end}
+		]]>
+	</select>	
+	
+</mapper>

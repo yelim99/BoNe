@@ -1,0 +1,26 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+		
+<style>
+footer{
+    background-color: #efefef;
+    height:100px;
+    line-height: 30px;
+    border:1px solid lightgray;
+    border-radius: 5px;
+    padding:10px 20px;
+    font-size:0.8em;
+    text-align: center;
+    clear:both;
+    margin-top:100px;
+}
+</style>
+
+		<footer>
+            <!-- footer -->
+            Copyright ⓒBONE</br>
+            고객센터: 02)655-1234</br>
+            대표 전화: 02)123-4567 | 주소: 서울특별시 강남구 논현동 123
+        </footer>
+</body>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.find.mapper.FindMapper">
+	 
+	<!-- 닉네임 가져오기 -->
+	<select id="selectNickname" parameterType="_int" resultType="string">
+		select nickname from introduce where ino=#{value}
+	</select>
+	
+	<!-- 소개제목 가져오기 -->
+	<select id="selectTitle" parameterType="_int" resultType="string">
+		select title from introduce where ino=#{value}
+	</select>
+
+	<!-- 주소 가져오기 -->
+	<select id="selectAddr" parameterType="_int" resultType="string">
+		select addr from introduce where ino=#{value}
+	</select>
+	
+	<!-- members 테이블의 addr1 가져오기 (지도) -->
+	<select id="addr1" resultType="string" parameterType="string">
+		select addr1 from members where nickname=#{nickname}
+	</select>
+	
+	<!-- 짧은 소개글 가져오기 -->
+	<select id="selectShortContent" parameterType="_int" resultType="string">
+		select short_content from introduce where ino=#{value}
+	</select>
+	
+	<!-- 소개글 가져오기 -->
+	<select id="selectContent" parameterType="_int" resultType="string">
+		select content from introduce where ino=#{value}
+	</select>
+	
+	<!-- 라이센스 가져오기 -->
+	<select id="selectLicense" parameterType="_int" resultType="string">
+		select license from introduce where ino=#{value}
+	</select>
+	
+	<!-- 데이케이 소형견 -->
+	<select id="selectSPetDayPrice" parameterType="_int" resultType="_int">
+		select sPetDay from price where ino=#{value}
+	</select>
+	
+	<!-- 1박케어 소형견 -->
+	<select id="selectSPetAllPrice" parameterType="_int" resultType="_int">
+		select sPetAll from price where ino=#{value}
+	</select>
+	
+	<!-- 데이케어 중형견 -->
+	<select id="selectMPetDayPrice" parameterType="_int" resultType="_int">
+		select mPetDay from price where ino=#{value}
+	</select>
+	
+	<!-- 1박케어 중형견 -->
+	<select id="selectMPetAllPrice" parameterType="_int" resultType="_int">
+		select mPetAll from price where ino=#{value}
+	</select>
+	
+	<!-- 데이케어 대형견 -->
+	<select id="selectLPetDayPrice" parameterType="_int" resultType="_int">
+		select lPetDay from price where ino=#{value}
+	</select>
+	
+	<!-- 1박케어 대형견 -->
+	<select id="selectLPetAllPrice" parameterType="_int" resultType="_int">
+		select lPetAll from price where ino=#{value}
+	</select>
+	
+	<select id="getSumStar" resultType="_int" parameterType="_int">
+		select sum(star) from reple where ino=#{value}
+	</select>
+	
+	<select id="getCntStar" resultType="_int" parameterType="_int">
+		select count(star) from reple where ino=#{value}
+	</select>
+	
+	<!-- wish에 들어있는지 확인 -->
+	<select id="getWish" parameterType="_int" resultType="_int">
+		select ino from wish where ino=#{value}
+	</select>
+	
+	<!-- 찜하기 목록에 추가 -->
+	<insert id="insertHeart" parameterType="wish">
+	<selectKey keyProperty="wno" resultType="_int">
+		select wish_seq.nextval from dual
+	</selectKey>
+		insert into wish values(#{unickname},#{ino},#{snickname},#{saddr},#{title},#{wno})
+	</insert>
+	
+	<!-- 찜하기 목록에 삭제 -->
+	<delete id="deleteHeart" parameterType="_int">
+		delete from wish where ino=#{value}
+	</delete>
+	
+	<!-- 서비스 받아오기 -->
+	<select id="selectService" parameterType="_int" resultType="string">
+		select service from introduce where ino=#{value}
+	</select>
+	
+	<select id="getCntReple" parameterType="_int" resultType="_int">
+		select count(rno) from reple where ino=#{value}
+	</select>
+	
+	<!-- 후기 받아오기 -->
+	<select id="selectRepleAll" resultType="ReviewBoard" parameterType="_int">
+		select * from (
+			select row_number() over(order by ino desc) rn, reple.*
+			from reple where ino=#{value}
+		)
+	</select>
+	
+	<select id="selectIntroduceByIno" resultType="Find" parameterType="_int">
+		select 
+		    (select unickname from wish where ino=introduce.ino) wishNick, 
+		    (select ino from wish where snickname=introduce.nickname) wishIno,
+		    introduce.*
+		from introduce where ino=#{ino}
+	</select>
+	
+	<select id="selectImg" resultType="string" parameterType="_int">
+		select ifile from introduce where ino=#{value}
+	</select>
+		
+</mapper>

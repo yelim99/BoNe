@@ -1,0 +1,128 @@
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.reviewboard.mapper.ReviewBoardMapper">
+
+	<insert id="insertReviewBoard" parameterType="ReviewBoard">
+		<selectKey keyProperty="rno" resultType="int" order="BEFORE">
+			SELECT reple_seq.nextval from dual
+		</selectKey>
+		INSERT INTO reple(rno,ino,nickname,wdate,title,content,rfile,star)
+		VALUES (#{rno},#{ino},#{nickname},SYSDATE,#{title},#{content},#{rfile},#{star})
+	</insert>
+
+	<select id="selectReviewBoard" resultType="ReviewBoard">
+		<!-- SELECT * FROM reple order by rno desc -->
+<!-- 		SELECT reple.*
+		FROM reple
+		JOIN (
+			SELECT ino, AVG(star) AS avg_star
+			FROM reple
+			GROUP BY ino
+			ORDER BY avg_star DESC
+			FETCH FIRST 4 ROWS ONLY
+		)
+		subquery ON reple.ino = subquery.ino -->
+		SELECT *
+		FROM reple
+		ORDER BY star DESC, rno DESC
+	</select>
+
+	<select id="selectReviewByRno" resultType="ReviewBoard"
+		parameterType="_int">
+		SELECT * FROM reple
+		WHERE rno = #{rno}
+	</select>
+
+	<select id="findNicknameByRno" resultType="java.lang.String"
+		parameterType="_int">
+		SELECT i.nickname
+		FROM reple r JOIN introduce i
+		ON r.ino = i.ino
+		WHERE r.rno = #{rno}
+	</select>
+
+
+	<!-- 댓글 -->
+	<select id="selectReplyByRno" resultType="Reply"
+		parameterType="_int">
+		SELECT * FROM re_reple
+		WHERE rno = #{rno}
+		order by rrno asc
+	</select>
+
+	<insert id="insertReply" parameterType="Reply">
+		<selectKey keyProperty="rrno" resultType="int"
+			order="BEFORE">
+			SELECT re_reple_seq.nextval from dual
+		</selectKey>
+		INSERT INTO re_reple(rrno, rno, nickname, content, wdate)
+		VALUES (#{rrno},#{rno},#{nickname},#{content},SYSDATE)
+	</insert>
+
+	<select id="getTotalReply" resultType="_int"
+		parameterType="_int">
+		SELECT count(rrno)
+		FROM re_reple
+		WHERE rno = #{rno}
+	</select>
+
+	<!-- 글 수정 -->
+	<update id="updateReview" parameterType="ReviewBoard">
+		UPDATE reple 
+		SET star=#{star},title=#{title},content=#{content}, rfile=#{rfile}
+		WHERE rno = #{rno}
+	</update>
+
+	<!-- 글 삭제 -->
+	<delete id="deleteReReview" parameterType="_int">
+		DELETE FROM re_reple
+		WHERE rno = #{rno}
+	</delete>
+	<delete id="deleteReview" parameterType="_int">
+		DELETE FROM reple
+		WHERE rno = #{rno}
+	</delete>
+
+	<!-- 리뷰 댓글 하나만 삭제 int deleteReply(int rrno); -->
+	<delete id="deleteReply" parameterType="_int">
+		DELETE FROM re_reple
+		WHERE rrno = #{rrno}
+	</delete>
+
+	<!-- 리뷰 댓글 수정 -->
+	<update id="updateReply" parameterType="Reply">
+		UPDATE re_reple
+		SET content = #{content}
+		WHERE rrno = #{rrno}
+	</update>
+
+	<!-- 메인페이지에 펫시터 소개 넣기 -->
+	<select id="selectIntroduce" resultType="Find">
+		SELECT introduce.*
+		FROM introduce
+		JOIN (
+			SELECT ino, AVG(star) AS avg_star
+			FROM reple
+			GROUP BY ino
+			ORDER BY avg_star DESC
+		) subquery ON introduce.ino = subquery.ino
+	</select>
+
+	<!-- 일반회원 마이페이지에 내가 쓴 리뷰 -->
+	<select id="selectReviewByNickname" resultType="ReviewBoard">
+		SELECT * FROM reple
+		WHERE nickname = #{nickname}
+		ORDER BY rno desc
+	</select>
+
+	<select id="getSnicknameByIno" resultType="string"
+		parameterType="_int">
+		SELECT nickname
+		from introduce
+		where ino = #{ino}
+	</select>
+</mapper>
+
+
+

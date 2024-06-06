@@ -1,0 +1,94 @@
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sitter.mapper.SitterMapper">
+	
+	<insert id="sitterIntroduce" parameterType="com.sitter.model.SitterVO">
+		merge into introduce it
+		using dual
+		on (it.nickname = #{nickname})
+		when matched then
+		update set
+		title=#{title},short_content=#{short_content},addr=#{addr},tag=#{tag},
+		service=#{service},content=#{content},ifile=#{ifile}
+		when not matched then
+		insert (nickname,ino,title,short_content,addr,tag,service,content,ifile)
+		values(#{nickname},introduce_seq.nextval,#{title},#{short_content},#{addr},#{tag},#{service},#{content},#{ifile})
+	</insert>
+	
+	<select id="getSitterIntroduce" resultType="Sitter" parameterType="String">
+		select * from introduce where nickname = #{nickname}
+	</select> 
+	
+	<select id="getUserNickname" resultType="String" parameterType="String">
+		select nickname from members where mid = #{mid}
+	</select>
+	
+	
+	<!-- 회원정보 수정 -->
+	<select id="getUserInfo" resultType="user" parameterType="int">
+		select * from members where idx=#{value}
+	</select>
+	
+	<update id="editUserInfo" parameterType="user">
+		update members 
+		set nickname=#{nickname}, pwd=#{pwd}, email=#{email}, uname=#{uname}, tel1=#{tel1}, tel2=#{tel2},
+			tel3=#{tel3}, addr1=#{addr1}, addr2=#{addr2}, addr3=#{addr3}, slicense=#{slicense}, lfile=#{lfile}, 
+			post=#{post}, experience=#{experience}
+		where idx=#{idx}
+	</update>
+	
+	<select id="getSitterUsed" resultType="Sitter" parameterType="String">
+		select * from used where snickname = #{nickname} order by sdate
+	</select>
+	
+	<select id="getUsedNO" resultType="Sitter" parameterType="int">
+		select * from used where uno=#{uno}
+	</select>
+	
+	<update id="updateUsed" parameterType="Sitter">
+		update used set sdate=#{sdate}, fdate=#{fdate}, unickname=#{unickname}, pname=#{pname} 
+		where uno=#{uno}
+	</update>
+	
+	<select id="getMembersInfo" resultType="Sitter">
+		select * from members
+	</select>
+	
+	<select id="getPname" resultType="Sitter" parameterType="String">
+		select pname from mypet where nickname=#{nickname}
+	</select>
+	
+	<insert id="addUsed" parameterType="Sitter">
+		insert into used 
+		values(#{unickname},#{snickname},#{pname},#{sdate},#{fdate},uno_seq.nextval,
+			(select pno from mypet where nickname=#{unickname} and pname=#{pname})
+		)
+	</insert>
+	
+	<delete id="delUsed" parameterType="int">
+		delete from used where uno=#{uno}
+	</delete>
+	
+	<select id="petInfo" resultType="pet" parameterType="_int">
+		select * from mypet where pno=#{value}
+	</select>
+	
+	<select id="icheck" resultType="int" parameterType="string">
+		select ino from introduce where nickname=#{nickname}
+	</select>
+	
+	<delete id="delIntroduce" parameterType="_int">
+		delete from introduce where ino=#{ino}
+	</delete>
+	
+	<insert id="addPrice" parameterType="price">
+		insert into price
+		values (#{ino}, #{nickname}, #{spetday}, #{spetall}, #{mpetday}, #{mpetall}, #{lpetday}, #{lpetall})
+	</insert>
+	
+	<select id="getPrice" resultType="price" parameterType="string">
+		select * from price where nickname=#{nickname}
+	</select>
+	
+</mapper>

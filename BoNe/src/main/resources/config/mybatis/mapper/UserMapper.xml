@@ -1,0 +1,63 @@
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.user.mapper.UserMapper">
+
+
+	<insert id="createUser" parameterType="com.user.model.UserVO">
+		<selectKey keyProperty="idx" resultType="_int"
+			order="BEFORE">
+			select idx_seq.nextval from dual
+			
+		</selectKey>
+		insert into members(mid,nickname,pwd,email,uname,tel1,tel2,tel3,birthday,addr1,addr2,slicense,lfile,idx,post,ucheck,addr3,experience)
+		values(#{mid},#{nickname},#{pwd},#{email},#{uname},#{tel1},#{tel2},#{tel3}
+		,#{birthday},#{addr1:VARCHAR},#{addr2:VARCHAR},#{slicense},#{lfile},#{idx},#{post}, 'G', #{addr3},#{experience})
+	</insert>
+	
+	<insert id="createUserS" parameterType="com.user.model.UserVO">
+		<selectKey keyProperty="idx" resultType="_int"
+			order="BEFORE">
+			select idx_seq.nextval from dual
+			
+		</selectKey>
+		insert into members(mid,nickname,pwd,email,uname,tel1,tel2,tel3,birthday,addr1,addr2,slicense,lfile,idx,post,ucheck,addr3,experience)
+		values(#{mid},#{nickname},#{pwd},#{email},#{uname},#{tel1},#{tel2},#{tel3}
+		,#{birthday},#{addr1:VARCHAR},#{addr2:VARCHAR},#{slicense},#{lfile},#{idx},#{post},'S',#{addr3},#{experience})
+	</insert>
+
+	<select id="idCheck" resultType="int" parameterType="string">
+		select idx from members where mid=#{value}
+	</select>
+
+	<select id="nickCheck" resultType="int" parameterType="string">
+		select idx from members where nickname=#{value}
+	</select>
+
+	 <select id="findUser" resultType="user" parameterType="user"> 
+	select * from members where mid=#{mid} </select> 
+	
+	
+	<select id="getUserByKakao" resultType="user" parameterType="string">
+		select * from members 
+		where kakao=#{kakao}
+	</select>
+	
+	<select id="getIdByEmail" parameterType="String" resultType="String">
+		SELECT mid
+		FROM (
+			select mid
+			from members
+			where email=#{searchEmail}
+		) WHERE ROWNUM = 1
+	</select>
+	
+	<select id="getUserByEmail" resultType="user" parameterType="string">
+		SELECT *
+		FROM (
+			select *
+			from members
+			where email=#{searchEmail}
+		) WHERE ROWNUM = 1	
+	</select>
+</mapper>

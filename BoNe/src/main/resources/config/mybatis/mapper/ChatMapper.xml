@@ -1,0 +1,57 @@
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chat.mapper.ChatMapper">
+	
+	<insert id="insertChatRoom" parameterType="croom">
+		<selectKey keyProperty="roomId" resultType="int" order="BEFORE">
+			select roomId_seq.nextval from dual
+		</selectKey>
+		insert into chatroom(roomId, roomName, nickname, nick2)
+		values (#{roomId}, #{roomName}, #{nickname}, #{nick2})
+	</insert>
+	
+	<select id="findChatRoom" resultType="croom" parameterType="_int">
+		select * from chatroom where roomId=#{roomId}
+	</select>
+	
+	<insert id="insertMessage" parameterType="cmessage">
+		<selectKey keyProperty="mno" resultType="int" order="BEFORE">
+			select chat_seq.nextval from dual
+		</selectKey>
+		insert into chatmessage(roomId, message, sender_nick, nick2, mno)
+		values (#{roomId}, #{message}, #{sender_nick}, #{nick2}, #{mno})
+	</insert>
+	
+	<select id="selectMessage" resultType="cmessage" parameterType="_int">
+		select * from chatmessage where roomId=#{roomId} order by mno
+	</select>
+	
+	<select id="chatCheck" resultType="_int" parameterType="map">
+		select count(*) from chatroom where nickname=#{nickname} and nick2=#{nick2}
+	</select>
+	
+	<select id="findRoomId" resultType="int" parameterType="map">
+		select roomId from chatroom where nickname=#{nickname} and nick2=#{nick2}
+	</select>
+
+	<select id="roomList" resultType="croom" parameterType="string">
+		select * from chatroom where nickname=#{nickname}
+	</select>
+	
+	<select id="findUser" resultType="user" parameterType="croom">
+		select * from members 
+		<if test="findNick != ''">
+			where nickname like '%' || #{findNick} || '%'
+		</if>
+	</select>
+	
+	<select id="selectNick2" resultType="string" parameterType="_int">
+		select nick2 from chatmessage where roomId=#{value}
+	</select>
+	
+	<select id="roomList2" resultType="croom" parameterType="string">
+		select * from chatroom where nick2=#{nick2}
+	</select>
+
+</mapper>

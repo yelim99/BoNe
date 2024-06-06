@@ -1,0 +1,93 @@
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.user.mapper.GeneralMapper">
+	
+	<insert id = "insertGeneral" parameterType="pet">
+		<selectKey keyProperty="pno" resultType="int" order="BEFORE">
+			SELECT mypet_seq.nextval from dual
+		</selectKey>
+		INSERT INTO mypet
+		VALUES (#{nickname},#{pname},#{species1},#{species2},#{gender},#{bday},#{weight},#{particulars},#{image}, #{pno})
+	</insert>
+	
+	<select id="selectOnePet" resultType="pet" parameterType="string">
+		select * from (select * from mypet where nickname=#{nickname} order by pno asc)
+		where rownum = 1
+	</select>
+	
+	<select id="selectAllPet" resultType="pet" parameterType="string">
+		select * from mypet where nickname=#{nickname}
+	</select>
+	
+	
+	<!-- 펫 정보 수정 -->
+	<select id="getPetInfo" resultType="pet" parameterType="_int">
+		select * from mypet where pno=#{pno}
+	</select>
+	
+	<update id="editPetInfo" parameterType="pet">
+		update mypet
+		set pname=#{pname}, species1=#{species1}, species2=#{species2}, gender=#{gender}, bday=#{bday},
+			weight=#{weight}, particulars=#{particulars}, image=#{image}
+		where pno=#{pno}
+	</update>
+	
+	<delete id="delPetInfo" parameterType="pet">
+		delete from mypet where pno=#{pno}
+	</delete>
+	
+	<!-- 회원정보 수정 -->
+	<select id="getUserInfo" resultType="user" parameterType="int">
+		select * from members where idx=#{value}
+	</select>
+	
+	<update id="editUserInfo" parameterType="user">
+		update members 
+		set nickname=#{nickname}, pwd=#{pwd}, email=#{email}, uname=#{uname}, tel1=#{tel1}, tel2=#{tel2},
+			tel3=#{tel3}, addr1=#{addr1}, addr2=#{addr2}, addr3=#{addr3}, slicense=#{slicense}, lfile=#{lfile}, 
+			post=#{post}, experience=#{experience}
+		where idx=#{idx}
+	</update>
+	
+	<!-- 이용내역 가져오기 -->
+	<select id="getUsedHistory" resultType="Sitter" parameterType="string">
+		select * from used where unickname=#{value} order by sdate asc
+	</select>
+
+	<!-- 일단 일반회원 카카오 연동하기 눌렀을 때 -->
+	<update id="insertKakao" parameterType="user">
+	    UPDATE members
+	    SET kakao = #{kakao}
+	    WHERE mid = #{mid}
+	</update>
+	
+	<!-- 사용자 삭제하기 위한.... 로직들..... -->
+	<delete id="deleteMember" parameterType="int">
+		DELETE FROM members 
+		WHERE idx=#{idx}
+	</delete>
+	<select id="getNicknameByIdx" parameterType="int" resultType="String" >
+		select nickname
+		from members
+		where idx=#{idx}
+	</select>
+	<select id="getPnoByNickname" parameterType="String" resultType="Integer">
+		select pno
+		from mypet
+		where nickname=#{nickname}
+	</select>	
+	<delete id="deleteEveryReRepleByNickname" parameterType="String">
+		DELETE FROM re_reple
+		WHERE nickname=#{nickname}
+	</delete>
+	<delete id="deleteEveryRepleByNickname" parameterType="String">
+		DELETE FROM reple
+		WHERE nickname=#{nickname}
+	</delete>
+	<delete id="deleteIntroBySitterNickname" parameterType="String">
+		DELETE FROM introduce
+		WHERE nickname=#{nickname}
+	</delete>
+	
+</mapper>

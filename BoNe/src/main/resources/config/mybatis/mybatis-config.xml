@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+	<settings>
+		<setting name="jdbcTypeForNull" value="NULL" />
+	</settings>
+
+	<!-- typeAlias 타입 별칭 설정 ============================= -->
+	<typeAliases>
+		<typeAlias type="com.reviewboard.model.ReviewBoardVO" alias="ReviewBoard"/>
+		<typeAlias type="com.find.model.WishVO" alias="wish" />
+		<typeAlias type="com.find.model.PagingVO" alias="paging" />
+		<typeAlias type="com.reviewboard.model.ReplyVO" alias="Reply"/>
+		<typeAlias type="com.user.model.UserVO" alias="user" />
+		<typeAlias type="com.find.model.IntroduceVO" alias="Find"/>
+		<typeAlias type="com.user.model.UserModelVO" alias="pet"/>	<!-- 펫 정보 -->
+		<typeAlias type="com.sitter.model.SitterVO" alias="Sitter"/>
+		<typeAlias type="com.reserve.model.ReserveVO" alias="Reserve"/>
+		<typeAlias type="com.sitter.model.PriceVO" alias="price"/>
+		<typeAlias type="com.chat.model.ChatRoomVO" alias="croom"/>
+		<typeAlias type="com.chat.model.ChatMessageVO" alias="cmessage"/>
+		<typeAlias type="com.chat.model.ChatPagingVO" alias="cpaging"/>
+	</typeAliases>
+	
+	
+	<!-- mapper 정의 =========================================  -->
+	<mappers>
+		<mapper resource="config/mybatis/mapper/ReviewBoardMapper.xml" />
+		<mapper resource="config/mybatis/mapper/SitterFindMapper.xml" />
+		<mapper resource="config/mybatis/mapper/WishMapper.xml" />
+		<mapper resource="config/mybatis/mapper/UserMapper.xml" />
+		<mapper resource="config/mybatis/mapper/FindMapper.xml"/>
+		<mapper resource="config/mybatis/mapper/GeneralUserMapper.xml" />	<!-- 펫 정보 -->
+		<mapper resource="config/mybatis/mapper/SitterMapper.xml"/>
+		<mapper resource="config/mybatis/mapper/ReserveMapper.xml"/>
+		<mapper resource="config/mybatis/mapper/ChatMapper.xml"/>
+	</mappers>
+	
+</configuration>

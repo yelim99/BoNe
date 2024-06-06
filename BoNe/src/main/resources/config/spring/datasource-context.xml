@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd">
+
+	<!-- 1) context, mybats-spring 네임스페이스 추가함 -->
+	
+	<!-- 2) database.properties파일이 있는 곳 정보 추가 -->
+	<context:property-placeholder location="classpath:/config/props/database.properties" />
+	
+	<!-- 3) DataSource빈 등록 (DBCP 또는 Hikari CP 커넥션 풀)-->
+	<alias name="dataSource-${Global.DbType}" alias="dataSource" />
+	
+	<!-- DBCP 커넥션 풀 빈 등록 -->
+	<bean id="dataSource-oracle" class="org.apache.commons.dbcp2.BasicDataSource" 
+	destroy-method="close">
+		<property name="driverClassName" value="${Global.DriverClassName}"></property>
+		<property name="url" value="${Global.Url}" />
+		<property name="username" value="${Global.Username}" />
+		<property name="password" value="${Global.Password}" />
+	</bean>
+	
+	<!-- HikariCP 커넥션 풀 빈 등록 -->
+	<bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig">
+		<property name="driverClassName" value="${Global.DriverClassName}"/>
+		<property name="jdbcUrl" value="${Global.Url}"/>
+		<property name="username" value="${Global.Username}"/>
+		<property name="password" value="${Global.Password}"/>
+	</bean>
+	
+	<bean id="dataSource-hikari" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+		<constructor-arg ref="hikariConfig"/>
+	</bean>
+	
+	<!-- MyBatis -->
+	<!-- 4) SqlSessionFactoryBean 등록 -->
+	<bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="classpath:/config/mybatis/mybatis-config.xml" />
+	</bean>
+	
+	<!-- 5) SqlSessionTemplate 빈 등록 -->
+	<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="sqlSessionFactoryBean" />
+	</bean>
+	
+	<!-- 6) mybatis-spring:scan 설정
+		 여기에 설정된 패키지 안의 인터페이스들을 scan해서 해당 인터페이스를 상속받는 객체 (Proxy)를
+		 스프링이 대신 만들어준다.
+	-->
+	<mybatis-spring:scan base-package="com.find.mapper, com.reviewboard.mapper, com.user.mapper, com.sitter.mapper, com.reserve.mapper, com.chat.mapper" />
+
+
+</beans>
